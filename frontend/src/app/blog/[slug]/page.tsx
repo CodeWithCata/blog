@@ -1,14 +1,65 @@
-// src/app/blog/[slug]/page.tsx
-import { fetchArticleBySlug } from '@/services/strapi';
+import { fetchArticleBySlug, fetchFromStrapi } from '@/services/strapi';
 import { BlocksRenderer } from '@strapi/blocks-react-renderer';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { CardGlitchCorner } from '@/components/sandbox/CardGlitchCorner';
+import { Metadata } from 'next';
 
 const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL || 'http://localhost:1337';
 
-export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
+
+// 🚀 CACHING LAYER: Pre-render blog routes at build time (Incremental Static Regeneration)
+export async function generateStaticParams() {
+  try {
+    // FIXED: Removed the <any> type argument since fetchFromStrapi isn't explicitly configured as a generic
+    const response = await fetchFromStrapi('articles?fields[0]=slug') as any;
+    if (!response?.data) return [];
+    
+    return response.data.map((article: any) => ({
+      slug: article.slug,
+    }));
+  } catch (error) {
+    console.error('Failed generating static cache paths for articles:', error);
+    return [];
+  }
+}
+
+// 🔍 SEO LAYER: Dynamic Metadata Generator for Search Engine Indexing
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const resolvedParams = await params;
+  const article = await fetchArticleBySlug(resolvedParams.slug) as any; // FIXED: Safely cast as any to read fields missing from the interface matrix
+
+  if (!article) {
+    return {
+      title: 'Article Not Found',
+    };
+  }
+
+  const fallbackDesc = `Read ${article.title} on My Tech Journal.`;
+  const description = article.description || fallbackDesc;
+
+  return {
+    title: article.title,
+    description: description,
+    openGraph: {
+      title: article.title,
+      description: description,
+      type: 'article',
+      url: `https://cwc-blog-two.vercel.app/blog/${resolvedParams.slug}`,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: article.title,
+      description: description,
+    }
+  };
+}
+
+export default async function BlogPostPage({ params }: PageProps) {
   const resolvedParams = await params;
   const article = await fetchArticleBySlug(resolvedParams.slug);
 
@@ -103,8 +154,6 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             <span className="w-1 h-1 bg-[#2A2825]/20 rounded-full" />
             <span className="font-semibold tracking-wide group-hover:text-[#2A2825] transition-colors duration-300">{dateStamp}</span>
             <span className="w-1 h-1 bg-[#2A2825]/20 rounded-full" />
-            
-           
           </div>
 
           <h1 className="text-3xl md:text-5xl font-black tracking-tight text-[#2A2825] leading-[1.18] transition-all duration-500 group-hover:translate-x-1">
@@ -112,39 +161,39 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           </h1>
         </header>
 
-   {/* Hero Image Frame – with decoupled elastic floating and balanced depth */}
-{imageUrl && (
-  <div className="relative aspect-[16/9] w-full mb-16 rounded-3xl p-[1px] bg-gradient-to-b from-[#2A2825]/15 via-transparent to-[#2A2825]/20 shadow-[0_20px_50px_-20px_rgba(42,40,37,0.12)] group overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-2 hover:shadow-[0_35px_70px_-20px_rgba(42,40,37,0.18)]">
-    <div className="relative w-full h-full rounded-[23px] overflow-hidden bg-white animate-float" style={{ animationDuration: '14s' }}>
-      
-      {/* Target Image with enhanced parallax scale layer */}
-      <Image
-        src={imageUrl}
-        alt={article.title}
-        fill
-        className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] scale-100 group-hover:scale-[1.035] filter saturate-[0.98] group-hover:saturate-100"
-        priority
-      />
-      
-      {/* Multi-layered dynamic lighting overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#2A2825]/15 via-transparent to-white/5 opacity-100 transition-opacity duration-500 group-hover:opacity-80 pointer-events-none" />
+        {/* Hero Image Frame – with decoupled elastic floating and balanced depth */}
+        {imageUrl && (
+          <div className="relative aspect-[16/9] w-full mb-16 rounded-3xl p-[1px] bg-gradient-to-b from-[#2A2825]/15 via-transparent to-[#2A2825]/20 shadow-[0_20px_50px_-20px_rgba(42,40,37,0.12)] group overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-2 hover:shadow-[0_35px_70px_-20px_rgba(42,40,37,0.18)]">
+            <div className="relative w-full h-full rounded-[23px] overflow-hidden bg-white animate-float" style={{ animationDuration: '14s' }}>
+              
+              {/* Target Image with enhanced parallax scale layer */}
+              <Image
+                src={imageUrl}
+                alt={article.title}
+                fill
+                className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] scale-100 group-hover:scale-[1.035] filter saturate-[0.98] group-hover:saturate-100"
+                priority
+              />
+              
+              {/* Multi-layered dynamic lighting overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#2A2825]/15 via-transparent to-white/5 opacity-100 transition-opacity duration-500 group-hover:opacity-80 pointer-events-none" />
 
-      {/* Glitch corner decoration - Elastic spring response */}
-      <div className="absolute top-0 right-0 w-14 h-14 pointer-events-none z-20">
-        <div className="absolute inset-0 bg-white/50 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full" />
-        <div className="relative w-full h-full opacity-40 group-hover:opacity-100 transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:rotate-90 group-hover:scale-105">
-          <CardGlitchCorner />
-        </div>
-      </div>
+              {/* Glitch corner decoration - Elastic spring response */}
+              <div className="absolute top-0 right-0 w-14 h-14 pointer-events-none z-20">
+                <div className="absolute inset-0 bg-white/50 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full" />
+                <div className="relative w-full h-full opacity-40 group-hover:opacity-100 transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:rotate-90 group-hover:scale-105">
+                  <CardGlitchCorner />
+                </div>
+              </div>
 
-      {/* Playful Floating Interactive Label */}
-      <div className="absolute bottom-4 left-4 font-mono text-[10px] text-[#2A2825] bg-white/95 backdrop-blur-md border border-[#2A2825]/5 px-3 py-1.5 rounded-xl opacity-0 translate-y-3 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:opacity-100 group-hover:translate-y-0 shadow-[0_4px_12px_rgba(42,40,37,0.08)] font-bold tracking-wide">
-        ✨ VISUAL // DEPTH_RENDER_OK
-      </div>
-  
-    </div>
-  </div>
-)}
+              {/* Playful Floating Interactive Label */}
+              <div className="absolute bottom-4 left-4 font-mono text-[10px] text-[#2A2825] bg-white/95 backdrop-blur-md border border-[#2A2825]/5 px-3 py-1.5 rounded-xl opacity-0 translate-y-3 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:opacity-100 group-hover:translate-y-0 shadow-[0_4px_12px_rgba(42,40,37,0.08)] font-bold tracking-wide">
+                ✨ VISUAL // DEPTH_RENDER_OK
+              </div>
+          
+            </div>
+          </div>
+        )}
 
         {/* Article Body Content – refined prose styles */}
         <div className="prose max-w-none 
@@ -158,7 +207,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           prose-pre:bg-white prose-pre:border prose-pre:border-[#2A2825]/10 prose-pre:text-[#2A2825] prose-pre:rounded-2xl prose-pre:p-6 prose-pre:shadow-[0_12px_30px_-10px_rgba(42,40,37,0.06)] prose-pre:font-mono prose-pre:text-sm
           prose-blockquote:border-l-4 prose-blockquote:border-amber-500 prose-blockquote:bg-gradient-to-r prose-blockquote:from-amber-500/[0.03] prose-blockquote:to-transparent prose-blockquote:px-6 prose-blockquote:py-3 prose-blockquote:text-[#2A2825]/80 prose-blockquote:not-italic prose-blockquote:rounded-r-2xl prose-blockquote:shadow-sm
           prose-li:marker:text-orange-500 prose-li:marker:font-bold">
-          <BlocksRenderer content={article.content} />
+          <BlocksRenderer content={article.content as any} />
         </div>
 
         {/* Footer – now with interactive system status */}

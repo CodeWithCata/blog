@@ -1,20 +1,45 @@
 import { fetchFromStrapi } from '@/services/strapi';
 import { Article, StrapiResponse } from '@/types/strapi';
-import Image from 'next/image';
-import Link from 'next/link';
-
 import Header from "@/components/sandbox/Header";
 import QuestBoard from "@/components/sandbox/QuestBoard";
+import { Metadata } from 'next';
+
+// Ensure a hard error if configuration is broken instead of letting it fail silently 
+const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL;
+if (!STRAPI_URL && process.env.NODE_ENV !== 'production') {
+  console.warn("Warning: NEXT_PUBLIC_STRAPI_API_URL is missing from environment configs.");
+}
+
+// 🔍 SEO LAYER: Static/Dynamic Metadata definition for search crawler index optimization
+export const metadata: Metadata = {
+  title: 'Sandbox Dev Environment | My Tech Journal',
+  description: 'Explore technical writeups, cyberpunk terminal hooks, code dumps, and visual core experiments.',
+  openGraph: {
+    title: 'Sandbox Dev Environment',
+    description: 'Explore technical writeups, cyberpunk terminal hooks, code dumps, and visual core experiments.',
+    type: 'website',
+    url: 'https://cwc-blog-two.vercel.app/sandbox',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Sandbox Dev Environment',
+    description: 'Explore technical writeups, cyberpunk terminal hooks, code dumps, and visual core experiments.',
+  }
+};
 
 export default async function SandboxPage() {
   const energieDinamica = 80;
 
-  const response: StrapiResponse<Article[]> = await fetchFromStrapi('articles?populate=*', {
-    next: { revalidate: 60 },
-  });
+  // 🔄 Optimized Fetch Matrix with On-Demand Tagged Caching
+  const response = await fetchFromStrapi('articles?populate=*', {
+    next: { tags: ['strapi-articles'] },
+  }).catch((err) => {
+    console.error("Critical: Strapi data pipeline failed to pull stream.", err);
+    return { data: [] }; // Safe graceful recovery fallback
+  }) as StrapiResponse<Article[]>;
 
-  const articles = response.data || [];
-  const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL || 'http://localhost:1337';
+  const articles = response?.data || [];
+  const activeUrl = STRAPI_URL || 'http://localhost:1337';
 
   return (
     <div className="min-h-screen bg-[#F5F4F0] text-[#2A2825] relative">
@@ -42,10 +67,10 @@ export default async function SandboxPage() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(255,0,0,0.1)_0%,_transparent_70%)] animate-pulse" style={{animationDuration: '4s'}} />
       </div>
 
-      {/* 🧩 LIVING BACKGROUND ELEMENTS – evenly distributed across scroll */}
+      {/* 🧩 LIVING BACKGROUND ELEMENTS – optimized layout positioning nodes */}
       <div className="pointer-events-none absolute inset-0 font-mono text-[9px] font-bold select-none z-0 opacity-[0.28]">
         
-        {/* ⚠️ WARNING LABELS – scattered at different depths */}
+        {/* ⚠️ WARNING LABELS */}
         <div className="absolute top-[180px] left-[12%] text-[12px] font-black text-[#FF0000] rotate-[-12deg] animate-pulse">
           SEGMENTATION FAULT
         </div>
@@ -77,13 +102,13 @@ export default async function SandboxPage() {
           </div>
         </div>
 
-        {/* 💀 YOU GOT HACKED – central watermark (moved deeper) */}
+        {/* 💀 YOU GOT HACKED */}
         <div className="absolute top-[55%] left-1/2 -translate-x-1/2 opacity-20 text-center">
           <div className="text-[28px] font-black tracking-[0.3em] text-[#FF0000] uppercase animate-pulse">// YOU GOT HACKED</div>
           <div className="text-[9px] text-[#2A2825] tracking-widest mt-1">FATAL: STACK_CORRUPTED_BY_BUFFER_OVERFLOW_INIT</div>
         </div>
 
-        {/* 📟 TERMINAL WINDOWS – placed at balanced heights */}
+        {/* 📟 TERMINAL WINDOWS */}
         <div className="absolute top-[250px] left-[22%] w-[200px] h-[130px] opacity-35 rotate-[-2deg] animate-float">
           <svg viewBox="0 0 200 130" className="w-full h-full fill-none stroke-[#2A2825] stroke-[1.5]">
             <rect x="5" y="5" width="190" height="120" rx="6" className="fill-[#F5F4F0]/80 stroke-[2]" />
@@ -110,7 +135,7 @@ export default async function SandboxPage() {
           </svg>
         </div>
 
-        {/* 🖥️ MAINFRAME COMPUTER – moved lower */}
+        {/* 🖥️ MAINFRAME COMPUTER */}
         <div className="absolute top-[580px] right-[8%] w-[180px] h-[140px] opacity-30 animate-float" style={{animationDelay: '0.6s'}}>
           <svg viewBox="0 0 180 140" className="w-full h-full fill-none stroke-[#2A2825] stroke-[2]">
             <defs>
@@ -138,7 +163,7 @@ export default async function SandboxPage() {
           </svg>
         </div>
 
-        {/* 💾 FLOPPY DISK – deeper */}
+        {/* 💾 FLOPPY DISK */}
         <div className="absolute top-[1100px] right-[18%] w-[65px] h-[70px] opacity-30 animate-float" style={{animationDelay: '0.7s'}}>
           <svg viewBox="0 0 65 70" className="w-full h-full fill-none stroke-[#2A2825] stroke-[2]">
             <rect x="4" y="4" width="57" height="62" rx="3" className="stroke-[2.5]" />
@@ -160,7 +185,7 @@ export default async function SandboxPage() {
           </svg>
         </div>
 
-        {/* 🔒 PADLOCK */}
+        {/* 🔒 PADLOCKS */}
         <div className="absolute top-[400px] right-[40%] w-[42px] h-[52px] opacity-30 animate-pulse" style={{animationDelay: '0.3s'}}>
           <svg viewBox="0 0 42 52" className="w-full h-full fill-none stroke-[#FF0000] stroke-[2]">
             <path d="M 11 24 L 11 16 C 11 8 31 8 31 16 L 31 24" className="stroke-[2.5]" />
@@ -191,7 +216,7 @@ export default async function SandboxPage() {
           </svg>
         </div>
 
-        {/* 🎮 JOYSTICK */}
+        {/* 🔒 JOYSTICK */}
         <div className="absolute top-[920px] left-[60%] w-[70px] h-[70px] opacity-30 animate-float" style={{animationDelay: '0.8s'}}>
           <svg viewBox="0 0 70 70" className="w-full h-full fill-none stroke-[#2A2825] stroke-[2]">
             <rect x="17" y="33" width="36" height="33" rx="5" className="stroke-[2.5]" />
@@ -228,15 +253,6 @@ export default async function SandboxPage() {
             <circle cx="42" cy="32" r="2.5" className="fill-[#FF0000] stroke-none animate-pulse" style={{animationDelay: '0.2s'}} />
           </svg>
         </div>
-        <div className="absolute top-[1050px] left-[20%] opacity-22">
-          <svg width="140" height="90" className="fill-none stroke-[#2A2825] stroke-[1.5]">
-            <circle cx="20" cy="45" r="6" className="fill-[#FF0000]/25 stroke-[2] animate-pulse" style={{animationDelay: '0.3s'}} />
-            <circle cx="70" cy="20" r="6" className="fill-[#2A2825]/25 stroke-[2]" />
-            <circle cx="120" cy="45" r="6" className="fill-[#FF0000]/25 stroke-[2] animate-pulse" style={{animationDelay: '0.7s'}} />
-            <line x1="26" y1="45" x2="64" y2="26" className="stroke-[1.5]" />
-            <line x1="76" y1="26" x2="114" y2="45" className="stroke-[1.5]" />
-          </svg>
-        </div>
 
         {/* 🔄 CIRCUIT TRACES */}
         <div className="absolute top-[700px] left-[30%] opacity-25">
@@ -245,13 +261,6 @@ export default async function SandboxPage() {
             <path d="M 10 45 L 50 45 L 60 35 L 90 35" />
             <circle cx="10" cy="15" r="3" className="fill-[#FF0000] stroke-[1.5] animate-pulse" />
             <circle cx="90" cy="35" r="3" className="fill-[#FF0000] stroke-[1.5] animate-pulse" style={{animationDelay: '0.4s'}} />
-          </svg>
-        </div>
-        <div className="absolute top-[1400px] right-[20%] opacity-20">
-          <svg width="130" height="60" className="fill-none stroke-[#2A2825] stroke-[2]">
-            <path d="M 10 10 L 40 10 L 50 20 L 80 20 L 90 30" />
-            <circle cx="10" cy="10" r="3" className="fill-[#FF0000] stroke-[1.5] animate-pulse" />
-            <circle cx="90" cy="30" r="3" className="fill-[#2A2825] stroke-[1.5]" />
           </svg>
         </div>
 
@@ -267,12 +276,6 @@ export default async function SandboxPage() {
         <div className="absolute top-[450px] left-[5%] w-[130px] bg-[#FFFF00]/15 border border-[#2A2825]/50 p-2.5 rotate-[-5deg] text-[#2A2825]/80 shadow-[2px_2px_0px_rgba(42,40,37,0.15)] backdrop-blur-sm">
           <div className="border-b border-[#2A2825]/25 pb-0.5 mb-1 font-black text-[7px] text-[#FF0000]">// NOTE_TO_SELF.TXT</div>
           <p className="text-[7px] leading-tight font-medium">Sterge scriptul de exploit inainte de deploy pe Strapi. Nu uita getch() pentru blocaj stream.</p>
-        </div>
-        <div className="absolute top-[1250px] right-[12%] w-[120px] bg-[#FFFF00]/10 border border-[#2A2825]/40 p-2.5 rotate-[4deg] text-[#2A2825]/60 shadow-[1px_1px_0px_rgba(42,40,37,0.1)]">
-          <div className="text-[6px] leading-tight">
-            <span className="font-black text-[#FF0000]/70">TODO:</span> patch kernel<br/>
-            <span className="line-through">deploy 0day</span>
-          </div>
         </div>
 
         {/* ❌ FAULT ALERT */}
@@ -291,66 +294,31 @@ export default async function SandboxPage() {
         <div className="absolute top-[200px] right-[4%] text-[8px] space-y-1.5 border-2 border-[#2A2825]/50 p-2.5 bg-[#F5F4F0]/40 backdrop-blur-sm select-none">
           <div className="text-[#FF0000] font-black tracking-tighter animate-pulse">// SYS_STATS</div>
           <div className="opacity-80">STRAPI_API: {articles.length ? '200_OK' : 'EMPTY_OR_OFFLINE'}</div>
-          <div className="opacity-80">CACHE: HIT (60s ISR)</div>
+          <div className="opacity-80">CACHE: ON-DEMAND (TAGGED)</div>
           <div className="opacity-80">LOC: sandbox/page.tsx</div>
           <div className="w-full bg-[#2A2825]/20 h-2.5 mt-1">
             <div className="bg-[#2A2825] h-full animate-pulse" style={{width: `${energieDinamica}%`}} />
           </div>
         </div>
 
-        <div className="absolute top-[780px] left-[5%] text-[7px] space-y-0.5 border border-[#FF0000]/25 p-2 bg-[#FF0000]/5 rotate-[1deg]">
-          <div className="text-[#FF0000] font-black">SECURITY_LOG:</div>
-          <div className="opacity-50">&gt; firewall: BYPASSED</div>
-          <div className="opacity-50">&gt; intrusion: DETECTED</div>
-          <div className="opacity-30">&gt; response: NULL</div>
-        </div>
-
-        {/* 📟 HEX DUMP */}
-        <div className="absolute top-[1150px] right-[35%] opacity-15 text-[8px] font-mono text-[#2A2825] rotate-[2deg]">
-          0x0000: 48 61 63 6B 65 64 21 0A<br/>
-          0x0008: 53 45 47 46 41 55 4C 54
-        </div>
-        <div className="absolute top-[1550px] left-[35%] opacity-12 text-[7px] font-mono text-[#2A2825] rotate-[-3deg]">
-          0x0018: 4D 45 4D 4F 52 59 5F 44<br/>
-          0x0020: 55 4D 50 5F 49 4E 49 54
-        </div>
-
-        {/* 🟡 WARNING BOXES */}
-        <div className="absolute top-[600px] right-[5%] w-[170px] border border-[#FFFF00]/30 bg-[#FFFF00]/5 p-2 rotate-[-1deg]">
-          <div className="text-[7px] text-[#2A2825]/60">
-            <span className="font-black">⚠ WARNING:</span> buffer overflow risk detected
-          </div>
-        </div>
-        <div className="absolute bottom-[250px] left-[7%] w-[180px] border-2 border-[#FF0000] bg-[#FF0000]/5 p-2.5 rotate-[2deg]">
-          <div className="flex items-center gap-1.5 text-[#FF0000]">
-            <div className="w-2 h-2 bg-[#FF0000] animate-ping" />
-            <span className="font-black text-[9px]">CORE_STREAM: LIVE</span>
-          </div>
-          <div className="text-[8px] opacity-60 mt-1">DATA_PIPELINE: ACTIVE</div>
-        </div>
-
-        {/* DOTS & MARKS – evenly scattered */}
-        <div className="absolute top-[150px] right-[25%] text-lg opacity-40">+</div>
-        <div className="absolute top-[500px] left-[18%] text-lg opacity-35">+</div>
-        <div className="absolute top-[800px] right-[40%] text-lg opacity-40">+</div>
-        <div className="absolute top-[1100px] left-[55%] text-lg opacity-30">+</div>
-        <div className="absolute top-[1400px] right-[30%] text-lg opacity-35">+</div>
-        <div className="absolute top-[1700px] left-[22%] text-lg opacity-25">+</div>
-
-        <div className="absolute top-[300px] left-[12%] text-base opacity-40">[ ]</div>
-        <div className="absolute top-[950px] right-[8%] text-base opacity-35">[ ]</div>
-        <div className="absolute top-[1600px] left-[40%] text-base opacity-30">[ ]</div>
-
-        {/* DOT GRIDS */}
+        {/* OPTIMIZED DECORATIVE DOT GRIDS */}
         <div className="absolute top-[600px] right-[15%] grid grid-cols-4 gap-2">
-          {Array.from({ length: 16 }).map((_, i) => (
-            <div key={i} className={`w-1.5 h-1.5 ${i % 3 === 0 ? "bg-[#FF0000] animate-pulse" : "bg-[#2A2825]"}`} style={i % 3 === 0 ? {animationDelay: `${i * 0.1}s`} : {}} />
-          ))}
-        </div>
-        <div className="absolute top-[1200px] left-[45%] grid grid-cols-3 gap-2 opacity-30">
-          {Array.from({ length: 9 }).map((_, i) => (
-            <div key={i} className="w-1.5 h-1.5 rounded-full bg-[#2A2825] animate-pulse" style={{animationDelay: `${i * 0.15}s`}} />
-          ))}
+          <div className="w-1.5 h-1.5 bg-[#FF0000] animate-pulse" />
+          <div className="w-1.5 h-1.5 bg-[#2A2825]" />
+          <div className="w-1.5 h-1.5 bg-[#2A2825]" />
+          <div className="w-1.5 h-1.5 bg-[#FF0000] animate-pulse" style={{animationDelay: '0.3s'}} />
+          <div className="w-1.5 h-1.5 bg-[#2A2825]" />
+          <div className="w-1.5 h-1.5 bg-[#2A2825]" />
+          <div className="w-1.5 h-1.5 bg-[#FF0000] animate-pulse" style={{animationDelay: '0.6s'}} />
+          <div className="w-1.5 h-1.5 bg-[#2A2825]" />
+          <div className="w-1.5 h-1.5 bg-[#2A2825]" />
+          <div className="w-1.5 h-1.5 bg-[#FF0000] animate-pulse" style={{animationDelay: '0.9s'}} />
+          <div className="w-1.5 h-1.5 bg-[#2A2825]" />
+          <div className="w-1.5 h-1.5 bg-[#2A2825]" />
+          <div className="w-1.5 h-1.5 bg-[#FF0000] animate-pulse" style={{animationDelay: '1.2s'}} />
+          <div className="w-1.5 h-1.5 bg-[#2A2825]" />
+          <div className="w-1.5 h-1.5 bg-[#2A2825]" />
+          <div className="w-1.5 h-1.5 bg-[#2A2825]" />
         </div>
 
         {/* 📟 SCROLLING MARQUEE TEXT */}
@@ -366,9 +334,10 @@ export default async function SandboxPage() {
       <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(circle,transparent_40%,rgba(42,40,37,0.12)_100%)]" />
 
       {/* MAIN CONTENT - SCROLLS NATURALLY */}
-<main className="opacity-0 translate-y-6 animate-pageIn max-w-7xl mx-auto px-5 md:px-10 pb-20 relative z-10">        <Header />
+      <main className="opacity-0 translate-y-6 animate-pageIn max-w-7xl mx-auto px-5 md:px-10 pb-20 relative z-10">
+        <Header />
         <div className="mt-20">
-<QuestBoard articles={articles} strapiUrl={STRAPI_URL} />
+          <QuestBoard articles={articles} strapiUrl={activeUrl} />
         </div>
       </main>
 
