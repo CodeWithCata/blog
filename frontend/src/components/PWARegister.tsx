@@ -1,17 +1,17 @@
-'use strict';
-'use client';
+"use client";
 
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 export default function PWARegister() {
   useEffect(() => {
-    if ('serviceWorker' in navigator && window.location.hostname !== 'localhost') {
+    // Only run in the browser and only if the browser supports Service Workers
+    if (typeof window !== "undefined" && "serviceWorker" in navigator) {
       navigator.serviceWorker
-        .register('/sw.js')
-        .then((reg) => console.log('SW Registered perfectly!', reg.scope))
-        .catch((err) => console.error('SW Registration failed:', err));
+        .register("/sw.js")
+        .then((reg) => console.log("Service Worker active on scope:", reg.scope))
+        .catch((err) => console.error("Service Worker registration failed:", err));
     }
   }, []);
 
-  return null; // Componentul nu randează nimic vizual, doar rulează scriptul
+  return null;
 }

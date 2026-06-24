@@ -22,18 +22,22 @@ export default function BlogCard({ article, strapiUrl }: BlogCardProps) {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const ballRef = useRef<HTMLDivElement>(null);
 
-  const extractUrl = (media: any): string | null => {
-    if (!media) return null;
-    if (typeof media === "string" && media.trim() !== "") return media;
-    if (typeof media?.url === "string" && media.url.trim() !== "") return media.url;
-    if (typeof media?.attributes?.url === "string") return media.attributes.url;
-    if (Array.isArray(media) && media[0]) return extractUrl(media[0]);
-    if (media?.data) return extractUrl(media.data);
-    return null;
-  };
+const extractUrl = (media: any): string | null => {
+  if (!media) return null;
+  if (typeof media === "string" && media.trim() !== "") return media;
+  if (typeof media?.url === "string" && media.url.trim() !== "") return media.url;
+  if (typeof media?.attributes?.url === "string") return media.attributes.url;
+  if (Array.isArray(media) && media[0]) return extractUrl(media[0]);
+  if (media?.data) return extractUrl(media.data);
+  return null;
+};
 
-  const rawUrl = extractUrl(article.coverImage);
-  const imageUrl = rawUrl ? `${strapiUrl}${rawUrl}` : `https://picsum.photos/seed/${article.id}/800/500`;
+const rawUrl = extractUrl(article.coverImage);
+
+// FIX: Check if rawUrl already starts with http (absolute link from Strapi Cloud)
+const imageUrl = rawUrl 
+  ? (rawUrl.startsWith('http') ? rawUrl : `${strapiUrl}${rawUrl}`) 
+  : `https://picsum.photos/seed/${article.id}/800/500`;
 
   const dateStamp = new Date(article.publishedAt)
     .toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
