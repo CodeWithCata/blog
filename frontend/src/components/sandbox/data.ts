@@ -1,0 +1,67 @@
+// src/components/sandbox/data.ts
+
+export const ARTICOLE_INITIALE = [
+  {
+    id: 1,
+    title: "Am mutat tot blogul pe App Router și acum pare că am deschis o ușă spre alt univers.",
+    status: "MISIUNE ACTIVĂ",
+    categorie: "JURNAL",
+    imagine: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?q=80&w=2600&auto=format&fit=crop",
+    dimensiune: "md:col-span-7",
+  },
+  {
+    id: 2,
+    title: "Am încercat animații smooth. Am obținut ceva între magie și haos CPU.",
+    status: "EXPERIMENT",
+    categorie: "UI LAB",
+    imagine: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2600&auto=format&fit=crop",
+    dimensiune: "md:col-span-5",
+  },
+  {
+    id: 3,
+    title: "La 02:17 am șters 300 de linii. Sistemul a început să respire mai ușor.",
+    status: "REZOLVAT",
+    categorie: "REFACTOR",
+    imagine: "https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=2600&auto=format&fit=crop",
+    dimensiune: "md:col-span-5",
+  },
+  {
+    id: 4,
+    title: "Portofoliu v3: mai puțin polish, mai multă sinceritate de developer obosit.",
+    status: "SCHIȚĂ",
+    categorie: "PLAN",
+    imagine: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2600&auto=format&fit=crop",
+    dimensiune: "md:col-span-7",
+  },  {
+    id: 1,
+    title: "Am mutat tot blogul pe App Router și acum pare că am deschis o ușă spre alt univers.",
+    status: "MISIUNE ACTIVĂ",
+    categorie: "JURNAL",
+    imagine: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?q=80&w=2600&auto=format&fit=crop",
+    dimensiune: "md:col-span-7",
+  },
+  {
+    id: 2,
+    title: "Am încercat animații smooth. Am obținut ceva între magie și haos CPU.",
+    status: "EXPERIMENT",
+    categorie: "UI LAB",
+    imagine: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2600&auto=format&fit=crop",
+    dimensiune: "md:col-span-5",
+  },
+  {
+    id: 3,
+    title: "La 02:17 am șters 300 de linii. Sistemul a început să respire mai ușor.",
+    status: "REZOLVAT",
+    categorie: "REFACTOR",
+    imagine: "https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=2600&auto=format&fit=crop",
+    dimensiune: "md:col-span-5",
+  },
+  {
+    id: 4,
+    title: "Portofoliu v3: mai puțin polish, mai multă sinceritate de developer obosit.",
+    status: "SCHIȚĂ",
+    categorie: "PLAN",
+    imagine: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2600&auto=format&fit=crop",
+    dimensiune: "md:col-span-7",
+  },
+];
